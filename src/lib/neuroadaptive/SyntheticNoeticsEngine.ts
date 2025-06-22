@@ -4,7 +4,7 @@ import { SemanticAnalyzer, SemanticFingerprint } from './SemanticAnalyzer';
 import { AdaptiveSymbolGenerator } from './AdaptiveSymbolGenerator';
 import { AdaptiveSymbol } from './SymbolLibrary';
 
-export { SemanticFingerprint, AdaptiveSymbol };
+export type { SemanticFingerprint, AdaptiveSymbol };
 
 export class SyntheticNoeticsEngine {
   private fingerprint: SemanticFingerprint | null = null;
