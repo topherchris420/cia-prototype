@@ -60,10 +60,10 @@ export const ToggleArray = ({ operationalMode, onModeChange }: ToggleArrayProps)
   };
 
   return (
-    <div className="bg-black/20 backdrop-blur-xl rounded-2xl border border-gray-700/20 p-6 h-full">
-      <div className="space-y-4">
+    <div className="bg-black/20 backdrop-blur-xl rounded-2xl border border-gray-700/20 p-4 sm:p-6 h-full">
+      <div className="space-y-3 sm:space-y-4">
         
-        <div className="text-xs text-gray-400/60 uppercase tracking-widest text-center mb-6">
+        <div className="text-xs text-gray-400/60 uppercase tracking-widest text-center mb-4 sm:mb-6">
           OPERATIONAL ARRAY
         </div>
 
@@ -75,21 +75,21 @@ export const ToggleArray = ({ operationalMode, onModeChange }: ToggleArrayProps)
             <button
               key={toggle.key}
               onClick={() => onModeChange({ [toggle.key]: !isActive })}
-              className={`w-full p-4 rounded-xl border transition-all duration-300 group ${colorClasses.bg} ${colorClasses.border} ${colorClasses.glow} hover:scale-[1.02] active:scale-[0.98]`}
+              className={`w-full p-3 sm:p-4 rounded-xl border transition-all duration-300 group ${colorClasses.bg} ${colorClasses.border} ${colorClasses.glow} hover:scale-[1.02] active:scale-[0.98] touch-manipulation`}
             >
               <div className="flex items-center space-x-3">
-                <div className={`text-2xl ${colorClasses.text} transition-all duration-300 ${isActive ? 'animate-pulse' : ''}`}>
+                <div className={`text-xl sm:text-2xl ${colorClasses.text} transition-all duration-300 ${isActive ? 'animate-pulse' : ''}`}>
                   {toggle.icon}
                 </div>
                 <div className="flex-1 text-left">
-                  <div className={`text-sm font-medium ${colorClasses.text} tracking-wide`}>
+                  <div className={`text-xs sm:text-sm font-medium ${colorClasses.text} tracking-wide`}>
                     {toggle.label}
                   </div>
                   <div className="text-xs text-gray-500/80 mt-1">
                     {toggle.description}
                   </div>
                 </div>
-                <div className={`w-2 h-8 rounded-full transition-all duration-300 ${
+                <div className={`w-2 h-6 sm:h-8 rounded-full transition-all duration-300 ${
                   isActive 
                     ? `bg-gradient-to-b from-${toggle.color}-400/80 to-${toggle.color}-600/60` 
                     : 'bg-gray-600/30'
@@ -100,7 +100,7 @@ export const ToggleArray = ({ operationalMode, onModeChange }: ToggleArrayProps)
         })}
 
         {/* Status Indicator */}
-        <div className="pt-4 border-t border-gray-700/20">
+        <div className="pt-3 sm:pt-4 border-t border-gray-700/20">
           <div className="flex justify-center space-x-2">
             {Object.values(operationalMode).map((active, index) => (
               <div
