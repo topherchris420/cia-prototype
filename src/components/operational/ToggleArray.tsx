@@ -1,31 +1,33 @@
 
+interface OperationalMode {
+  silentOps: boolean;
+  entropyPulse: boolean;
+  phaseLock: boolean;
+}
+
 interface ToggleArrayProps {
-  operationalMode: {
-    silentOps: boolean;
-    entropyPulse: boolean;
-    phaseLock: boolean;
-  };
-  onModeChange: (mode: Partial<typeof operationalMode>) => void;
+  operationalMode: OperationalMode;
+  onModeChange: (mode: Partial<OperationalMode>) => void;
 }
 
 export const ToggleArray = ({ operationalMode, onModeChange }: ToggleArrayProps) => {
   const toggles = [
     {
-      key: 'silentOps',
+      key: 'silentOps' as keyof OperationalMode,
       label: 'SILENT OPS',
       icon: '◐',
       color: 'cyan',
       description: 'Subliminal carrier suppression'
     },
     {
-      key: 'entropyPulse',
+      key: 'entropyPulse' as keyof OperationalMode,
       label: 'ENTROPY PULSE',
       icon: '◈',
       color: 'violet',
       description: 'Paradox injection control'
     },
     {
-      key: 'phaseLock',
+      key: 'phaseLock' as keyof OperationalMode,
       label: 'PHASE LOCK',
       icon: '◊',
       color: 'emerald',
@@ -54,7 +56,7 @@ export const ToggleArray = ({ operationalMode, onModeChange }: ToggleArrayProps)
         glow: isActive ? 'shadow-emerald-500/20' : 'shadow-none'
       }
     };
-    return colors[color];
+    return colors[color as keyof typeof colors];
   };
 
   return (
