@@ -1,7 +1,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { ConsciousnessField } from '@/components/ConsciousnessField';
-import { InputResonator } from '@/components/InputResonator';
+import { AdvancedInputResonator } from '@/components/AdvancedInputResonator';
 import { StateMapper } from '@/components/StateMapper';
 import { AmbientController } from '@/components/AmbientController';
 
@@ -11,7 +11,10 @@ const Index = () => {
     amplitude: 0.5,
     coherence: 0.7,
     depth: 0.3,
-    resonance: 'alpha'
+    resonance: 'alpha',
+    biometricState: null,
+    neuralBands: null,
+    phaseTransition: false
   });
 
   const [textInput, setTextInput] = useState('');
@@ -41,7 +44,7 @@ const Index = () => {
             Vers5Dynamics
           </h1>
           <p className="text-purple-300/70 text-sm tracking-wide">
-            consciousness • resonance • exploration
+            neuroadaptive • consciousness • modulation
           </p>
         </div>
 
@@ -49,9 +52,9 @@ const Index = () => {
         <div className="flex-1 flex items-center justify-center p-6">
           <div className="w-full max-w-4xl grid grid-cols-1 lg:grid-cols-3 gap-8">
             
-            {/* Input Resonator */}
+            {/* Advanced Input Resonator */}
             <div className="lg:col-span-2">
-              <InputResonator
+              <AdvancedInputResonator
                 onStateChange={updateConsciousnessState}
                 textInput={textInput}
                 setTextInput={setTextInput}
