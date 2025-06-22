@@ -63,7 +63,7 @@ export const InputResonator = ({
     // For now, we'll simulate it
     setTimeout(() => {
       setIsListening(false);
-      setTextInput(prev => prev + ' [voice resonance detected]');
+      setTextInput(textInput + ' [voice resonance detected]');
     }, 3000);
   };
 
