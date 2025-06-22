@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 interface NoeticsConsoleProps {
   consciousnessState: any;
@@ -16,53 +16,74 @@ export const NoeticsConsole = ({
   const [phaseInsights, setPhaseInsights] = useState<string[]>([]);
   const [recursiveArtifacts, setRecursiveArtifacts] = useState<string[]>([]);
 
+  const generateSymbolChain = useCallback(() => {
+    const symbols = ['◊', '◈', '◉', '◎', '○', '◌', '◐', '◑', '◒', '◓'];
+    return Array.from({ length: 6 }, () => 
+      symbols[Math.floor(Math.random() * symbols.length)]
+    );
+  }, []);
+
+  const generatePhaseInsight = useCallback(() => {
+    const insights = [
+      'coherence drift detected',
+      'semantic resonance peak',
+      'biometric synchronization',
+      'phase transition imminent',
+      'consciousness vector stable',
+      'entropy pulse generated'
+    ];
+    return insights[Math.floor(Math.random() * insights.length)];
+  }, []);
+
+  const generateRecursiveArtifact = useCallback((input: string) => {
+    if (input.length < 10) return null;
+    const words = input.split(' ').filter(word => word.length > 3);
+    if (words.length === 0) return null;
+    const artifact = words[Math.floor(Math.random() * words.length)];
+    return `${artifact}→${artifact.split('').reverse().join('')}`;
+  }, []);
+
   // Simulate noetics engine outputs
   useEffect(() => {
-    if (!isActive) return;
+    if (!isActive) {
+      setSymbolChain([]);
+      setPhaseInsights([]);
+      setRecursiveArtifacts([]);
+      return;
+    }
 
     const interval = setInterval(() => {
       // Generate symbol chains
-      const symbols = ['◊', '◈', '◉', '◎', '○', '◌', '◐', '◑', '◒', '◓'];
-      const newChain = Array.from({ length: 6 }, () => 
-        symbols[Math.floor(Math.random() * symbols.length)]
-      );
-      setSymbolChain(newChain);
+      setSymbolChain(generateSymbolChain());
 
       // Generate phase insights
-      const insights = [
-        'coherence drift detected',
-        'semantic resonance peak',
-        'biometric synchronization',
-        'phase transition imminent',
-        'consciousness vector stable',
-        'entropy pulse generated'
-      ];
       if (Math.random() < 0.3) {
         setPhaseInsights(prev => [
-          insights[Math.floor(Math.random() * insights.length)],
+          generatePhaseInsight(),
           ...prev.slice(0, 3)
         ]);
       }
 
       // Generate recursive artifacts
       if (textInput.length > 10 && Math.random() < 0.2) {
-        const words = textInput.split(' ');
-        const artifact = words[Math.floor(Math.random() * words.length)];
-        setRecursiveArtifacts(prev => [
-          `${artifact}→${artifact.split('').reverse().join('')}`,
-          ...prev.slice(0, 2)
-        ]);
+        const artifact = generateRecursiveArtifact(textInput);
+        if (artifact) {
+          setRecursiveArtifacts(prev => [
+            artifact,
+            ...prev.slice(0, 2)
+          ]);
+        }
       }
     }, 2000);
 
     return () => clearInterval(interval);
-  }, [isActive, textInput]);
+  }, [isActive, textInput, generateSymbolChain, generatePhaseInsight, generateRecursiveArtifact]);
 
   return (
-    <div className="bg-black/10 backdrop-blur-xl rounded-2xl border border-gray-700/20 p-6 h-full">
+    <div className="bg-black/10 backdrop-blur-xl rounded-2xl border border-gray-700/20 p-4 sm:p-6 h-full">
       
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-4 sm:mb-6">
         <div className="text-xs text-gray-400/60 uppercase tracking-widest">
           NOETICS CONSOLE
         </div>
@@ -71,14 +92,14 @@ export const NoeticsConsole = ({
         }`} />
       </div>
 
-      <div className="space-y-6 h-full">
+      <div className="space-y-4 sm:space-y-6 h-full overflow-hidden">
         
         {/* Symbol Chains */}
-        <div className="border-l-2 border-violet-500/30 pl-4">
+        <div className="border-l-2 border-violet-500/30 pl-3 sm:pl-4">
           <div className="text-xs text-gray-400/60 uppercase tracking-wider mb-2">
             SYMBOL CHAIN
           </div>
-          <div className="flex space-x-2 text-xl text-violet-300/80">
+          <div className="flex space-x-2 text-lg sm:text-xl text-violet-300/80">
             {symbolChain.map((symbol, i) => (
               <span
                 key={i}
@@ -95,14 +116,14 @@ export const NoeticsConsole = ({
         </div>
 
         {/* Phase Transition Insights */}
-        <div className="border-l-2 border-cyan-500/30 pl-4">
+        <div className="border-l-2 border-cyan-500/30 pl-3 sm:pl-4">
           <div className="text-xs text-gray-400/60 uppercase tracking-wider mb-2">
             PHASE INSIGHTS
           </div>
-          <div className="space-y-1">
+          <div className="space-y-1 max-h-16 overflow-hidden">
             {phaseInsights.map((insight, i) => (
               <div
-                key={i}
+                key={`${insight}-${i}`}
                 className="text-xs text-cyan-300/70 font-mono transition-all duration-500"
                 style={{ opacity: 1 - i * 0.3 }}
               >
@@ -113,14 +134,14 @@ export const NoeticsConsole = ({
         </div>
 
         {/* Recursive Prompt Artifacts */}
-        <div className="border-l-2 border-emerald-500/30 pl-4">
+        <div className="border-l-2 border-emerald-500/30 pl-3 sm:pl-4">
           <div className="text-xs text-gray-400/60 uppercase tracking-wider mb-2">
             RECURSIVE ARTIFACTS
           </div>
-          <div className="space-y-1">
+          <div className="space-y-1 max-h-12 overflow-hidden">
             {recursiveArtifacts.map((artifact, i) => (
               <div
-                key={i}
+                key={`${artifact}-${i}`}
                 className="text-xs text-emerald-300/70 font-mono transition-all duration-500"
                 style={{ opacity: 1 - i * 0.4 }}
               >
@@ -131,7 +152,7 @@ export const NoeticsConsole = ({
         </div>
 
         {/* Consciousness Metrics */}
-        <div className="pt-4 border-t border-gray-700/20">
+        <div className="pt-3 sm:pt-4 border-t border-gray-700/20 mt-auto">
           <div className="grid grid-cols-2 gap-4 text-xs">
             <div>
               <div className="text-gray-500/60 uppercase tracking-wider">DEPTH</div>

@@ -1,4 +1,5 @@
 
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -21,7 +22,44 @@ export const SemanticInputChannel = ({
   operationalMode
 }: SemanticInputChannelProps) => {
   const isMobile = useIsMobile();
-  
+  const [voiceWaveform, setVoiceWaveform] = useState<number[]>([]);
+  const [breathPattern, setBreathPattern] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (isActive) {
+        // Generate voice waveform data
+        const waveformLength = isMobile ? 6 : 8;
+        const newWaveform = Array.from({ length: waveformLength }, () => 
+          4 + Math.random() * 8
+        );
+        setVoiceWaveform(newWaveform);
+        
+        // Update breath pattern
+        setBreathPattern(prev => (prev + 0.1) % (Math.PI * 2));
+      } else {
+        setVoiceWaveform(Array.from({ length: isMobile ? 6 : 8 }, () => 4));
+      }
+    }, 100);
+
+    return () => clearInterval(interval);
+  }, [isActive, isMobile]);
+
+  const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const newText = e.target.value;
+    setTextInput(newText);
+    
+    // Update consciousness state based on text input
+    if (newText.length > 0) {
+      onStateChange({
+        frequency: 432 + (newText.length % 100),
+        amplitude: Math.min(0.9, 0.3 + newText.length / 500),
+        coherence: Math.min(0.95, 0.4 + newText.length / 200),
+        depth: Math.min(0.8, newText.split(' ').length / 50)
+      });
+    }
+  };
+
   return (
     <div className="bg-black/10 backdrop-blur-xl rounded-2xl border border-gray-700/20 p-4 sm:p-6 h-full">
       
@@ -48,7 +86,7 @@ export const SemanticInputChannel = ({
       <div className="relative mb-3 sm:mb-4 flex-1">
         <Textarea
           value={textInput}
-          onChange={(e) => setTextInput(e.target.value)}
+          onChange={handleTextChange}
           placeholder="Interface with quantum consciousness field through natural semantic input..."
           className={`bg-black/20 border-gray-700/30 text-gray-200/90 placeholder:text-gray-500/50 ${
             isMobile ? 'min-h-[80px]' : 'min-h-[100px]'
@@ -72,13 +110,11 @@ export const SemanticInputChannel = ({
           <div className="flex items-center space-x-1">
             <div className="text-xs text-gray-500/70">VOICE:</div>
             <div className="flex space-x-px">
-              {Array.from({ length: isMobile ? 6 : 8 }, (_, i) => (
+              {voiceWaveform.map((height, i) => (
                 <div
                   key={i}
                   className="w-1 bg-green-400/40 rounded-full transition-all duration-100"
-                  style={{
-                    height: `${4 + (isActive ? Math.random() * 8 : 0)}px`
-                  }}
+                  style={{ height: `${height}px` }}
                 />
               ))}
             </div>
@@ -93,7 +129,7 @@ export const SemanticInputChannel = ({
                   key={i}
                   className="text-xs text-blue-400/50 transition-all duration-300"
                   style={{
-                    opacity: isActive ? 0.3 + Math.sin(Date.now() * 0.001 + i) * 0.3 : 0.2
+                    opacity: isActive ? 0.3 + Math.sin(breathPattern + i) * 0.3 : 0.2
                   }}
                 >
                   {glyph}

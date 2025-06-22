@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 interface ResonanceVisualizerProps {
@@ -16,6 +16,15 @@ export const ResonanceVisualizer = ({
   isActive 
 }: ResonanceVisualizerProps) => {
   const isMobile = useIsMobile();
+  const [animationTime, setAnimationTime] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setAnimationTime(prev => prev + 0.1);
+    }, 100);
+    return () => clearInterval(interval);
+  }, []);
+
   const modes = [
     { key: 'cymatic', label: isMobile ? 'CYM' : 'CYMATIC', icon: '◯' },
     { key: 'spectral', label: isMobile ? 'SPEC' : 'SPECTRAL', icon: '◈' },
@@ -82,8 +91,8 @@ export const ResonanceVisualizer = ({
                 className="bg-gradient-to-t from-violet-500/60 to-violet-300/80 rounded-t transition-all duration-100"
                 style={{
                   width: isMobile ? '4px' : '6px',
-                  height: `${20 + Math.sin(Date.now() * 0.01 + i * 0.3) * (isMobile ? 30 : 40)}px`,
-                  opacity: 0.4 + Math.sin(Date.now() * 0.005 + i * 0.2) * 0.3
+                  height: `${20 + Math.sin(animationTime + i * 0.3) * (isMobile ? 30 : 40)}px`,
+                  opacity: 0.4 + Math.sin(animationTime * 0.5 + i * 0.2) * 0.3
                 }}
               />
             ))}
@@ -99,10 +108,10 @@ export const ResonanceVisualizer = ({
                   key={i}
                   className="absolute w-2 h-2 bg-emerald-400/60 rounded-full"
                   style={{
-                    left: `${50 + Math.sin(Date.now() * 0.002 + i) * 40}%`,
-                    top: `${50 + Math.cos(Date.now() * 0.003 + i) * 40}%`,
-                    transform: `scale(${0.3 + Math.sin(Date.now() * 0.004 + i) * 0.7})`,
-                    opacity: 0.3 + Math.sin(Date.now() * 0.001 + i) * 0.4
+                    left: `${50 + Math.sin(animationTime * 0.2 + i) * 40}%`,
+                    top: `${50 + Math.cos(animationTime * 0.3 + i) * 40}%`,
+                    transform: `scale(${0.3 + Math.sin(animationTime * 0.4 + i) * 0.7})`,
+                    opacity: 0.3 + Math.sin(animationTime * 0.1 + i) * 0.4
                   }}
                 />
               ))}
@@ -115,11 +124,11 @@ export const ResonanceVisualizer = ({
                 return (
                   <path
                     key={i}
-                    d={`M ${size + Math.sin(Date.now() * 0.001 + i) * 60} ${size + Math.cos(Date.now() * 0.001 + i) * 45} Q ${size} ${size} ${size - Math.sin(Date.now() * 0.001 + i) * 60} ${size - Math.cos(Date.now() * 0.001 + i) * 45}`}
+                    d={`M ${size + Math.sin(animationTime * 0.1 + i) * 60} ${size + Math.cos(animationTime * 0.1 + i) * 45} Q ${size} ${size} ${size - Math.sin(animationTime * 0.1 + i) * 60} ${size - Math.cos(animationTime * 0.1 + i) * 45}`}
                     stroke="rgba(16, 185, 129, 0.3)"
                     strokeWidth="1"
                     fill="none"
-                    opacity={0.2 + Math.sin(Date.now() * 0.002 + i) * 0.3}
+                    opacity={0.2 + Math.sin(animationTime * 0.2 + i) * 0.3}
                   />
                 );
               })}

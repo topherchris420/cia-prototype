@@ -41,19 +41,22 @@ export const ToggleArray = ({ operationalMode, onModeChange }: ToggleArrayProps)
         bg: isActive ? 'bg-cyan-500/20' : 'bg-gray-800/20',
         border: isActive ? 'border-cyan-400/60' : 'border-gray-600/30',
         text: isActive ? 'text-cyan-300' : 'text-gray-400',
-        glow: isActive ? 'shadow-cyan-500/20' : 'shadow-none'
+        glow: isActive ? 'shadow-cyan-500/20' : 'shadow-none',
+        gradient: isActive ? 'bg-cyan-400/80' : 'bg-gray-600/30'
       },
       violet: {
         bg: isActive ? 'bg-violet-500/20' : 'bg-gray-800/20',
         border: isActive ? 'border-violet-400/60' : 'border-gray-600/30',
         text: isActive ? 'text-violet-300' : 'text-gray-400',
-        glow: isActive ? 'shadow-violet-500/20' : 'shadow-none'
+        glow: isActive ? 'shadow-violet-500/20' : 'shadow-none',
+        gradient: isActive ? 'bg-violet-400/80' : 'bg-gray-600/30'
       },
       emerald: {
         bg: isActive ? 'bg-emerald-500/20' : 'bg-gray-800/20',
         border: isActive ? 'border-emerald-400/60' : 'border-gray-600/30',
         text: isActive ? 'text-emerald-300' : 'text-gray-400',
-        glow: isActive ? 'shadow-emerald-500/20' : 'shadow-none'
+        glow: isActive ? 'shadow-emerald-500/20' : 'shadow-none',
+        gradient: isActive ? 'bg-emerald-400/80' : 'bg-gray-600/30'
       }
     };
     return colors[color as keyof typeof colors];
@@ -89,11 +92,7 @@ export const ToggleArray = ({ operationalMode, onModeChange }: ToggleArrayProps)
                     {toggle.description}
                   </div>
                 </div>
-                <div className={`w-2 h-6 sm:h-8 rounded-full transition-all duration-300 ${
-                  isActive 
-                    ? `bg-gradient-to-b from-${toggle.color}-400/80 to-${toggle.color}-600/60` 
-                    : 'bg-gray-600/30'
-                }`} />
+                <div className={`w-2 h-6 sm:h-8 rounded-full transition-all duration-300 ${colorClasses.gradient}`} />
               </div>
             </button>
           );
