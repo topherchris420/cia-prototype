@@ -1,5 +1,6 @@
-
 import { useEffect, useRef } from 'react';
+import { AdaptiveSymbol } from '@/lib/neuroadaptive/SyntheticNoeticsEngine';
+import { ConsciousnessVector3D } from '@/lib/neuroadaptive/PhaseSpaceDriftTracker';
 
 interface ConsciousnessFieldProps {
   state: {
@@ -11,6 +12,8 @@ interface ConsciousnessFieldProps {
     biometricState?: any;
     neuralBands?: any;
     phaseTransition?: boolean;
+    consciousnessVector?: ConsciousnessVector3D;
+    adaptiveSymbols?: AdaptiveSymbol[];
   };
   isActive: boolean;
 }
@@ -18,17 +21,22 @@ interface ConsciousnessFieldProps {
 export const ConsciousnessField = ({ state, isActive }: ConsciousnessFieldProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationRef = useRef<number>();
+  const phaseSpaceRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    const phaseCanvas = phaseSpaceRef.current;
+    if (!canvas || !phaseCanvas) return;
 
     const ctx = canvas.getContext('2d');
-    if (!ctx) return;
+    const phaseCtx = phaseCanvas.getContext('2d');
+    if (!ctx || !phaseCtx) return;
 
     const resizeCanvas = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
+      phaseCanvas.width = window.innerWidth;
+      phaseCanvas.height = window.innerHeight;
     };
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
@@ -38,89 +46,131 @@ export const ConsciousnessField = ({ state, isActive }: ConsciousnessFieldProps)
     const animate = () => {
       time += 0.01;
       
-      // Enhanced fade for phase transitions
-      const fadeAlpha = state.phaseTransition ? 0.15 : 0.05;
-      ctx.fillStyle = `rgba(15, 23, 42, ${fadeAlpha})`;
+      // Enhanced fade for quantum coherence
+      const fadeAlpha = state.phaseTransition ? 0.2 : 0.03;
+      ctx.fillStyle = `rgba(0, 0, 0, ${fadeAlpha})`;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       const centerX = canvas.width / 2;
       const centerY = canvas.height / 2;
 
-      // Generate advanced cymatic patterns based on neural bands
-      const baseRadius = Math.min(canvas.width, canvas.height) * 0.3;
-      const numRings = state.neuralBands ? 12 : 8;
-      const numNodes = 64; // Increased resolution for classified-grade precision
+      // Render main consciousness field
+      renderQuantumField(ctx, centerX, centerY, time);
+      
+      // Render adaptive symbols if present
+      if (state.adaptiveSymbols && state.adaptiveSymbols.length > 0) {
+        renderAdaptiveSymbols(ctx, centerX, centerY, time);
+      }
 
-      // Neural band-specific modulation
+      // Render phase space visualization
+      if (state.consciousnessVector) {
+        renderPhaseSpace(phaseCtx, time);
+      }
+
+      animationRef.current = requestAnimationFrame(animate);
+    };
+
+    const renderQuantumField = (ctx: CanvasRenderingContext2D, centerX: number, centerY: number, time: number) => {
+      // ... keep existing code (cymatic pattern generation)
+      const baseRadius = Math.min(canvas.width, canvas.height) * 0.35;
+      const numRings = state.neuralBands ? 16 : 10;
+      const numNodes = 128; // Ultra-high resolution for operational grade
+
+      // Enhanced neural band modulation
       const neuralModulation = state.neuralBands ? {
-        delta: state.neuralBands.delta * 0.1,
-        theta: state.neuralBands.theta * 0.2,
-        alpha: state.neuralBands.alpha * 0.3,
-        beta: state.neuralBands.beta * 0.4,
-        gamma: state.neuralBands.gamma * 0.5
-      } : { delta: 0, theta: 0, alpha: 0.3, beta: 0, gamma: 0 };
+        delta: state.neuralBands.delta * 0.15,
+        theta: state.neuralBands.theta * 0.25,
+        alpha: state.neuralBands.alpha * 0.35,
+        beta: state.neuralBands.beta * 0.45,
+        gamma: state.neuralBands.gamma * 0.65
+      } : { delta: 0, theta: 0, alpha: 0.35, beta: 0, gamma: 0 };
 
       for (let ring = 0; ring < numRings; ring++) {
         const ringRadius = baseRadius * (ring + 1) / numRings;
-        const intensity = state.amplitude * (1 - ring / numRings);
+        const intensity = state.amplitude * (1 - ring / numRings * 0.7);
         
-        // Apply neural band influence
+        // Multi-dimensional wave interference
         const bandInfluence = Object.values(neuralModulation).reduce((sum, val) => sum + val, 0);
-        const modifiedIntensity = intensity * (1 + bandInfluence);
+        const quantumIntensity = intensity * (1 + bandInfluence);
         
         for (let node = 0; node < numNodes; node++) {
           const angle = (node / numNodes) * Math.PI * 2;
           
-          // Complex wave interference pattern
-          const primaryWave = Math.sin(time * state.frequency / 100 + ring * 0.5) * state.coherence;
-          const harmonicWave = Math.sin(time * state.frequency / 50 + angle * 3) * neuralModulation.gamma;
+          // Complex quantum wave equations
+          const primaryWave = Math.sin(time * state.frequency / 100 + ring * 0.7) * state.coherence;
+          const harmonicWave = Math.sin(time * state.frequency / 25 + angle * 5) * neuralModulation.gamma;
+          const subharmonicWave = Math.sin(time * state.frequency / 200 + ring * 0.3) * neuralModulation.delta;
           const breathingWave = state.biometricState ? 
-            Math.sin(time * 10) * state.biometricState.breathingPattern * 0.3 : 0;
+            Math.sin(time * 15) * state.biometricState.breathingPattern * 0.4 : 0;
           
-          const waveOffset = (primaryWave + harmonicWave + breathingWave) * 20;
-          const radius = ringRadius + waveOffset;
+          const totalWaveOffset = (primaryWave + harmonicWave + subharmonicWave + breathingWave) * 30;
+          const radius = ringRadius + totalWaveOffset;
           
           const x = centerX + Math.cos(angle) * radius;
           const y = centerY + Math.sin(angle) * radius;
           
-          // Enhanced color mapping for neural states
-          const hue = getAdvancedResonanceHue(state.resonance, ring, time);
-          const saturation = 70 + (modifiedIntensity * 30);
-          const lightness = 40 + (state.coherence * 40);
-          const alpha = modifiedIntensity * (isActive ? 0.9 : 0.3);
+          // Quantum-grade color mapping
+          const hue = getQuantumResonanceHue(state.resonance, ring, time, angle);
+          const saturation = 60 + (quantumIntensity * 40);
+          const lightness = 30 + (state.coherence * 50);
+          const alpha = quantumIntensity * (isActive ? 0.95 : 0.2);
           
+          // Render quantum particle
           ctx.beginPath();
-          ctx.arc(x, y, 1 + modifiedIntensity * 4, 0, Math.PI * 2);
+          ctx.arc(x, y, 1 + quantumIntensity * 5, 0, Math.PI * 2);
           ctx.fillStyle = `hsla(${hue}, ${saturation}%, ${lightness}%, ${alpha})`;
           ctx.fill();
           
-          // Quantum entanglement lines for gamma states
-          if (state.neuralBands && state.neuralBands.gamma > 0.7) {
-            const entanglementNode = (node + Math.floor(numNodes / 3)) % numNodes;
-            const entangleAngle = (entanglementNode / numNodes) * Math.PI * 2;
-            const entangleRadius = ringRadius + Math.sin(time * state.frequency / 80 + ring * 0.3) * state.coherence * 15;
-            const entangleX = centerX + Math.cos(entangleAngle) * entangleRadius;
-            const entangleY = centerY + Math.sin(entangleAngle) * entangleRadius;
-            
-            ctx.beginPath();
-            ctx.moveTo(x, y);
-            ctx.lineTo(entangleX, entangleY);
-            ctx.strokeStyle = `hsla(${hue + 60}, 80%, 70%, ${alpha * 0.3})`;
-            ctx.lineWidth = 0.5;
-            ctx.stroke();
+          // Quantum entanglement visualization for gamma states
+          if (state.neuralBands && state.neuralBands.gamma > 0.8) {
+            renderQuantumEntanglement(ctx, x, y, angle, ring, time, hue, alpha);
           }
         }
       }
 
-      // Central consciousness singularity
-      const pulseRadius = 25 + Math.sin(time * 3) * 15 * state.depth;
+      // Central consciousness singularity with enhanced effects
+      renderConsciousnessSingularity(ctx, centerX, centerY, time);
+    };
+
+    const renderQuantumEntanglement = (
+      ctx: CanvasRenderingContext2D, 
+      x: number, 
+      y: number, 
+      angle: number, 
+      ring: number, 
+      time: number, 
+      hue: number, 
+      alpha: number
+    ) => {
+      const entanglementNodes = 3;
+      for (let i = 1; i <= entanglementNodes; i++) {
+        const entangleAngle = angle + (Math.PI * 2 / entanglementNodes) * i;
+        const entangleRadius = (ring + 1) * 30 + Math.sin(time * state.frequency / 60 + ring * 0.5) * 20;
+        const entangleX = (canvas.width / 2) + Math.cos(entangleAngle) * entangleRadius;
+        const entangleY = (canvas.height / 2) + Math.sin(entangleAngle) * entangleRadius;
+        
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        ctx.lineTo(entangleX, entangleY);
+        ctx.strokeStyle = `hsla(${hue + 120}, 90%, 80%, ${alpha * 0.2})`;
+        ctx.lineWidth = 0.3;
+        ctx.stroke();
+      }
+    };
+
+    const renderConsciousnessSingularity = (ctx: CanvasRenderingContext2D, centerX: number, centerY: number, time: number) => {
+      const pulseRadius = 35 + Math.sin(time * 4) * 25 * state.depth;
       const cognitiveInfluence = state.biometricState ? state.biometricState.cognitiveLoad : 0.5;
-      const singularityRadius = pulseRadius * (1 + cognitiveInfluence);
+      const singularityRadius = pulseRadius * (1 + cognitiveInfluence * 0.8);
       
+      // Multi-layered gradient for consciousness depth
       const gradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, singularityRadius);
-      gradient.addColorStop(0, `hsla(${getAdvancedResonanceHue(state.resonance, 0, time)}, 90%, 80%, 0.9)`);
-      gradient.addColorStop(0.7, `hsla(${getAdvancedResonanceHue(state.resonance, 0, time)}, 80%, 60%, 0.4)`);
-      gradient.addColorStop(1, `hsla(${getAdvancedResonanceHue(state.resonance, 0, time)}, 70%, 40%, 0)`);
+      const baseHue = getQuantumResonanceHue(state.resonance, 0, time, 0);
+      
+      gradient.addColorStop(0, `hsla(${baseHue}, 100%, 90%, 0.95)`);
+      gradient.addColorStop(0.3, `hsla(${baseHue + 60}, 90%, 70%, 0.7)`);
+      gradient.addColorStop(0.6, `hsla(${baseHue + 120}, 80%, 50%, 0.4)`);
+      gradient.addColorStop(1, `hsla(${baseHue + 180}, 70%, 30%, 0)`);
       
       ctx.beginPath();
       ctx.arc(centerX, centerY, singularityRadius, 0, Math.PI * 2);
@@ -129,15 +179,82 @@ export const ConsciousnessField = ({ state, isActive }: ConsciousnessFieldProps)
 
       // Phase transition effects
       if (state.phaseTransition) {
-        const transitionRadius = baseRadius * 1.5;
+        const transitionRadius = singularityRadius * 2;
         ctx.beginPath();
         ctx.arc(centerX, centerY, transitionRadius, 0, Math.PI * 2);
-        ctx.strokeStyle = `hsla(${getAdvancedResonanceHue(state.resonance, 0, time)}, 100%, 80%, 0.6)`;
-        ctx.lineWidth = 3;
+        ctx.strokeStyle = `hsla(${baseHue}, 100%, 90%, 0.8)`;
+        ctx.lineWidth = 4;
         ctx.stroke();
       }
+    };
 
-      animationRef.current = requestAnimationFrame(animate);
+    const renderAdaptiveSymbols = (ctx: CanvasRenderingContext2D, centerX: number, centerY: number, time: number) => {
+      state.adaptiveSymbols!.forEach((symbol, index) => {
+        const angle = (index / state.adaptiveSymbols!.length) * Math.PI * 2 + time * 0.1;
+        const distance = 150 + Math.sin(time * symbol.frequency * 0.1) * 50;
+        const x = centerX + Math.cos(angle) * distance;
+        const y = centerY + Math.sin(angle) * distance;
+        
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.rotate(symbol.phase + time * 0.05);
+        ctx.scale(1 + symbol.semanticWeight * 0.5, 1 + symbol.semanticWeight * 0.5);
+        
+        // Render symbol with quantum glow
+        ctx.fillStyle = `hsla(${symbol.frequency * 2}, 80%, 70%, ${0.7 + symbol.coherenceLevel * 0.3})`;
+        ctx.shadowColor = ctx.fillStyle;
+        ctx.shadowBlur = 15;
+        ctx.font = `${20 + symbol.semanticWeight * 10}px serif`;
+        ctx.textAlign = 'center';
+        ctx.fillText(symbol.glyph, 0, 0);
+        
+        ctx.restore();
+      });
+    };
+
+    const renderPhaseSpace = (phaseCtx: CanvasRenderingContext2D, time: number) => {
+      if (!state.consciousnessVector) return;
+      
+      // Clear with subtle fade
+      phaseCtx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+      phaseCtx.fillRect(0, 0, phaseCanvas.width, phaseCanvas.height);
+      
+      const { x, y, z } = state.consciousnessVector;
+      
+      // Map 3D coordinates to 2D visualization
+      const plotX = phaseCanvas.width * 0.1 + x * phaseCanvas.width * 0.8;
+      const plotY = phaseCanvas.height * 0.1 + (1 - y) * phaseCanvas.height * 0.8;
+      const plotSize = 5 + z * 15;
+      
+      // Render consciousness point in phase space
+      phaseCtx.beginPath();
+      phaseCtx.arc(plotX, plotY, plotSize, 0, Math.PI * 2);
+      phaseCtx.fillStyle = `hsla(${x * 360}, 70%, 60%, 0.8)`;
+      phaseCtx.fill();
+      
+      // Render coherence radius visualization
+      phaseCtx.beginPath();
+      phaseCtx.arc(plotX, plotY, state.consciousnessVector.coherenceRadius * 100, 0, Math.PI * 2);
+      phaseCtx.strokeStyle = `hsla(${x * 360}, 70%, 60%, 0.3)`;
+      phaseCtx.lineWidth = 2;
+      phaseCtx.stroke();
+    };
+
+    const getQuantumResonanceHue = (resonance: string, ring: number, time: number, angle: number): number => {
+      const baseHues: Record<string, number> = {
+        alpha: 240,    // Quantum Blue
+        beta: 120,     // Neural Green  
+        gamma: 300,    // Cosmic Purple
+        delta: 0,      // Consciousness Red
+        theta: 180,    // Ethereal Cyan
+      };
+      
+      const baseHue = baseHues[resonance] || 240;
+      const ringModulation = (ring * 12) % 60;
+      const timeModulation = Math.sin(time * 0.3) * 40;
+      const angleModulation = Math.sin(angle * 3) * 20;
+      
+      return (baseHue + ringModulation + timeModulation + angleModulation) % 360;
     };
 
     animate();
@@ -150,27 +267,18 @@ export const ConsciousnessField = ({ state, isActive }: ConsciousnessFieldProps)
     };
   }, [state, isActive]);
 
-  const getAdvancedResonanceHue = (resonance: string, ring: number, time: number): number => {
-    const baseHues: Record<string, number> = {
-      alpha: 240,    // Blue
-      beta: 120,     // Green  
-      gamma: 60,     // Yellow
-      delta: 300,    // Purple
-      theta: 180,    // Cyan
-    };
-    
-    const baseHue = baseHues[resonance] || 240;
-    const ringModulation = (ring * 15) % 60;
-    const timeModulation = Math.sin(time * 0.5) * 30;
-    
-    return (baseHue + ringModulation + timeModulation) % 360;
-  };
-
   return (
-    <canvas
-      ref={canvasRef}
-      className="absolute inset-0 w-full h-full"
-      style={{ mixBlendMode: 'screen' }}
-    />
+    <>
+      <canvas
+        ref={canvasRef}
+        className="absolute inset-0 w-full h-full"
+        style={{ mixBlendMode: 'screen', zIndex: 1 }}
+      />
+      <canvas
+        ref={phaseSpaceRef}
+        className="absolute inset-0 w-full h-full pointer-events-none"
+        style={{ mixBlendMode: 'overlay', zIndex: 2, opacity: 0.6 }}
+      />
+    </>
   );
 };
