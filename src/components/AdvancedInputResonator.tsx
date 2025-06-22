@@ -2,13 +2,17 @@
 import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Mic, MicOff, Play, Pause, Eye, EyeOff, Zap, Globe } from 'lucide-react';
+import { Play, Pause, Eye, EyeOff } from 'lucide-react';
 import { BiometricAnalyzer, BiometricState } from '@/lib/neuroadaptive/BiometricAnalyzer';
 import { EntrainmentEngine } from '@/lib/neuroadaptive/EntrainmentEngine';
 import { ResonanceMapper } from '@/lib/neuroadaptive/ResonanceMapper';
 import { SyntheticNoeticsEngine, AdaptiveSymbol } from '@/lib/neuroadaptive/SyntheticNoeticsEngine';
 import { PhaseSpaceDriftTracker, ConsciousnessVector3D } from '@/lib/neuroadaptive/PhaseSpaceDriftTracker';
 import { SilentFrequencyCarrier, CarrierSignal } from '@/lib/neuroadaptive/SilentFrequencyCarrier';
+import { BiometricDisplay } from '@/components/neuroadaptive/BiometricDisplay';
+import { SymbolDisplay } from '@/components/neuroadaptive/SymbolDisplay';
+import { NeuralBandSelector } from '@/components/neuroadaptive/NeuralBandSelector';
+import { ControlMatrix } from '@/components/neuroadaptive/ControlMatrix';
 
 interface AdvancedInputResonatorProps {
   onStateChange: (state: any) => void;
@@ -273,61 +277,10 @@ export const AdvancedInputResonator = ({
         </div>
 
         {/* Adaptive Symbology Display */}
-        {adaptiveSymbols.length > 0 && (
-          <div className="bg-black/30 rounded-2xl p-4 border border-purple-400/30">
-            <div className="text-xs text-purple-300/70 uppercase tracking-wider mb-3">
-              Dynamic Symbol Stream
-            </div>
-            <div className="flex flex-wrap gap-4 justify-center">
-              {adaptiveSymbols.map((symbol, index) => (
-                <div
-                  key={index}
-                  className="relative"
-                  style={{
-                    transform: `rotate(${symbol.phase * 57.3}deg) scale(${1 + symbol.semanticWeight * 0.5})`,
-                    opacity: 0.7 + symbol.coherenceLevel * 0.3
-                  }}
-                >
-                  <span 
-                    className="text-2xl text-purple-300 animate-pulse"
-                    style={{
-                      textShadow: `0 0 ${symbol.frequency * 0.1}px rgba(147, 51, 234, 0.6)`,
-                      filter: `hue-rotate(${symbol.frequency * 3}deg)`
-                    }}
-                  >
-                    {symbol.glyph}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
+        <SymbolDisplay adaptiveSymbols={adaptiveSymbols} />
 
         {/* Neural Band Targeting */}
-        <div className="space-y-4">
-          <label className="text-purple-300/80 text-sm font-light tracking-wide">
-            Consciousness Target Vector
-          </label>
-          <div className="grid grid-cols-5 gap-3">
-            {(['delta', 'theta', 'alpha', 'beta', 'gamma'] as const).map((band) => (
-              <Button
-                key={band}
-                onClick={() => setCurrentTarget(band)}
-                variant="ghost"
-                className={`${
-                  currentTarget === band 
-                    ? 'bg-purple-500/40 text-purple-200 border-2 border-purple-400/70 shadow-lg shadow-purple-500/20' 
-                    : 'bg-black/20 text-white/60 hover:bg-purple-500/20 border border-purple-500/20'
-                } transition-all duration-300 transform hover:scale-105`}
-              >
-                <div className="flex flex-col items-center py-2">
-                  <span className="text-xs font-medium">{band.toUpperCase()}</span>
-                  <div className="w-8 h-1 mt-1 rounded-full bg-gradient-to-r from-purple-400 to-cyan-400 opacity-70" />
-                </div>
-              </Button>
-            ))}
-          </div>
-        </div>
+        <NeuralBandSelector currentTarget={currentTarget} setCurrentTarget={setCurrentTarget} />
 
         {/* Consciousness Vector Input */}
         <div className="space-y-4">
@@ -346,127 +299,22 @@ export const AdvancedInputResonator = ({
         </div>
 
         {/* Advanced Control Matrix */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          
-          {/* Neural Entrainment */}
-          <div className="space-y-3">
-            <label className="text-purple-300/80 text-xs font-light tracking-wider uppercase">
-              Binaural Matrix
-            </label>
-            <div className="flex gap-2">
-              <Button
-                onClick={startEntrainment}
-                disabled={!isActive || !biometricState}
-                className="flex-1 bg-purple-600/30 hover:bg-purple-600/40 text-purple-200 border border-purple-500/40 transition-all duration-300"
-              >
-                {isListening ? (
-                  <>
-                    <div className="w-3 h-3 mr-2 bg-green-400 rounded-full animate-pulse" />
-                    Entraining {currentTarget.toUpperCase()}
-                  </>
-                ) : (
-                  <>
-                    <Mic className="w-4 h-4 mr-2" />
-                    Neural Sync
-                  </>
-                )}
-              </Button>
-              {isListening && (
-                <Button
-                  onClick={stopEntrainment}
-                  variant="ghost"
-                  className="text-red-400 hover:text-red-300 hover:bg-red-500/10"
-                >
-                  <MicOff className="w-4 h-4" />
-                </Button>
-              )}
-            </div>
-          </div>
+        <ControlMatrix
+          isListening={isListening}
+          isActive={isActive}
+          planetarySync={planetarySync}
+          entropyMode={entropyMode}
+          biometricState={biometricState}
+          currentTarget={currentTarget}
+          startEntrainment={startEntrainment}
+          stopEntrainment={stopEntrainment}
+          togglePlanetarySync={togglePlanetarySync}
+          injectEntropy={injectEntropy}
+        />
 
-          {/* Planetary Synchronization */}
-          <div className="space-y-3">
-            <label className="text-purple-300/80 text-xs font-light tracking-wider uppercase">
-              Planetary Alignment
-            </label>
-            <Button
-              onClick={togglePlanetarySync}
-              className={`w-full ${
-                planetarySync 
-                  ? 'bg-green-500/30 text-green-300 border border-green-400/50' 
-                  : 'bg-black/20 text-white/70 border border-purple-500/20'
-              } transition-all duration-300`}
-            >
-              <Globe className="w-4 h-4 mr-2" />
-              {planetarySync ? 'Schumann Sync' : 'Local Field'}
-            </Button>
-          </div>
-
-          {/* Entropy Injection */}
-          <div className="space-y-3">
-            <label className="text-purple-300/80 text-xs font-light tracking-wider uppercase">
-              State Transition
-            </label>
-            <Button
-              onClick={injectEntropy}
-              disabled={!isActive}
-              className={`w-full bg-orange-500/20 hover:bg-orange-500/30 text-orange-300 border border-orange-500/30 transition-all duration-300 ${
-                entropyMode ? 'animate-pulse' : ''
-              }`}
-            >
-              <Zap className="w-4 h-4 mr-2" />
-              Paradox Loop
-            </Button>
-          </div>
-        </div>
-
-        {/* Real-time Biometric Status */}
+        {/* Real-time Biometric Status and Phase Space Coordinates */}
         {biometricState && (
-          <div className="space-y-3 p-4 bg-black/30 rounded-xl border border-cyan-500/20">
-            <div className="text-xs text-cyan-300/70 uppercase tracking-wider mb-3">
-              Live Consciousness Metrics
-            </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs">
-              <div className="text-center">
-                <span className="text-white/50 block">Cognitive Load</span>
-                <span className="text-cyan-300 text-lg font-light">{Math.round(biometricState.cognitiveLoad * 100)}%</span>
-              </div>
-              <div className="text-center">
-                <span className="text-white/50 block">Attention Vector</span>
-                <span className="text-green-300 text-lg font-light">{Math.round(biometricState.attentionLevel * 100)}%</span>
-              </div>
-              <div className="text-center">
-                <span className="text-white/50 block">Emotional Field</span>
-                <span className="text-purple-300 text-lg font-light">{Math.round(biometricState.emotionalValence * 100)}%</span>
-              </div>
-              <div className="text-center">
-                <span className="text-white/50 block">Voice Resonance</span>
-                <span className="text-yellow-300 text-lg font-light">{Math.round(biometricState.voiceStress * 100)}%</span>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Phase Space Coordinates */}
-        {consciousnessVector && (
-          <div className="p-3 bg-black/40 rounded-lg border border-indigo-500/20">
-            <div className="text-xs text-indigo-300/70 uppercase tracking-wider mb-2">
-              Phase Space Coordinates
-            </div>
-            <div className="grid grid-cols-3 gap-3 text-xs text-center">
-              <div>
-                <span className="text-white/50 block">Cognitive X</span>
-                <span className="text-indigo-300">{consciousnessVector.x.toFixed(3)}</span>
-              </div>
-              <div>
-                <span className="text-white/50 block">Emotional Y</span>
-                <span className="text-indigo-300">{consciousnessVector.y.toFixed(3)}</span>
-              </div>
-              <div>
-                <span className="text-white/50 block">Attentional Z</span>
-                <span className="text-indigo-300">{consciousnessVector.z.toFixed(3)}</span>
-              </div>
-            </div>
-          </div>
+          <BiometricDisplay biometricState={biometricState} consciousnessVector={consciousnessVector} />
         )}
 
       </div>
