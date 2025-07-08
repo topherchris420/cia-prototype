@@ -7,6 +7,9 @@ import { NoeticsConsole } from '@/components/operational/NoeticsConsole';
 import { BiometricSimulator } from '@/components/operational/BiometricSimulator';
 import { AudioEngine } from '@/components/operational/AudioEngine';
 import { ParameterControl } from '@/components/operational/ParameterControl';
+import { QuantumEntanglementVisualizer } from '@/components/advanced/QuantumEntanglementVisualizer';
+import { MultidimensionalMapper } from '@/components/advanced/MultidimensionalMapper';
+import { TemporalCohesionField } from '@/components/advanced/TemporalCohesionField';
 
 interface DesktopLayoutProps {
   consciousnessState: any;
@@ -100,7 +103,7 @@ export const DesktopLayout = ({
       </div>
 
       {/* Bottom Left - Semantic Input Channel */}
-      <div className="col-span-5 row-span-3 row-start-10">
+      <div className="col-span-3 row-span-3 row-start-10">
         <SemanticInputChannel
           textInput={textInput}
           setTextInput={setTextInput}
@@ -108,6 +111,31 @@ export const DesktopLayout = ({
           setIsActive={setIsActive}
           onStateChange={updateConsciousnessState}
           operationalMode={operationalMode}
+        />
+      </div>
+
+      {/* Quantum Systems Panel */}
+      <div className="col-span-2 row-span-3 row-start-10 col-start-4 space-y-2">
+        <QuantumEntanglementVisualizer
+          consciousnessState={consciousnessState}
+          isActive={isActive}
+          onEntanglementChange={(strength) => 
+            updateConsciousnessState({ entanglementStrength: strength })
+          }
+        />
+      </div>
+
+      <div className="col-span-3 row-span-3 row-start-10 col-start-6 grid grid-cols-1 gap-2">
+        <MultidimensionalMapper
+          consciousnessState={consciousnessState}
+          isActive={isActive}
+        />
+        <TemporalCohesionField
+          consciousnessState={consciousnessState}
+          isActive={isActive}
+          onTemporalShift={(timeIndex) => 
+            updateConsciousnessState({ temporalIndex: timeIndex })
+          }
         />
       </div>
 
